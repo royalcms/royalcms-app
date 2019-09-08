@@ -15,8 +15,7 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
         
-        $this->royalcms['app'] = $this->royalcms->share(function($royalcms)
-        {
+        $this->royalcms->singleton('app', function($royalcms) {
             return new AppManager($royalcms);
         });
         

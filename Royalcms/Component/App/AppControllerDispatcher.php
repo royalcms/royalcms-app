@@ -121,9 +121,9 @@ class AppControllerDispatcher
             if ( ! $bundle) {
                 abort(404, "App {$this->route->getModule()} does not found.");
             }
-            
-            $controller = $bundle->getControllerClassName($this->route->getController());
 
+            $controller = $bundle->getControllerClassName($this->route->getController());
+            
             return $controller;
         } catch (InvalidArgumentException $e) {
             abort(403, $e->getMessage());

@@ -3,6 +3,8 @@
 namespace Royalcms\Component\App\Facades;
 
 use RC_Hook;
+use Royalcms\Component\App\ApplicationLoader;
+use Royalcms\Component\Support\Facades\File as RC_File;
 use Royalcms\Component\Support\Facades\Lang;
 use Royalcms\Component\Support\Facades\Cache as RC_Cache;
 use RC_Uri;
@@ -130,40 +132,44 @@ class App extends Facade
             RC_APP_PATH,
             SITE_APP_PATH
         );
-    
-        foreach ($app_roots as $app_root) {
-            if (file_exists($app_root)) {
-                $apps_dir = @opendir( $app_root);
-                while (false !== ($file = @readdir($apps_dir))) {
-                    if (substr($file, 0, 1) !== '.') {
-                        $package = self::get_app_package($file, false, false); //Do not apply markup/translate as it'll be cached.
-                        if ( empty ( $package['identifier'] ) )
-                            continue;
-                        
-                        $rc_apps[$package['identifier']] = $package;
-                    }
-                }
-                @closedir($apps_dir);
-            }
 
-            uasort( $rc_apps, array(__CLASS__, '_sort_uname_callback') );
-        }
-    
+        $loader = new ApplicationLoader($app_roots);
+        $rc_apps = $loader->toArray($loader->loadApps());
+
+//        foreach ($app_roots as $app_root) {
+//            if (file_exists($app_root)) {
+//                $apps_dir = @opendir( $app_root);
+//                while (false !== ($file = @readdir($apps_dir))) {
+//                    if (substr($file, 0, 1) !== '.') {
+//                        $package = self::get_app_package($file, false, false); //Do not apply markup/translate as it'll be cached.
+//                        if ( empty ( $package['identifier'] ) )
+//                            continue;
+//
+//                        $rc_apps[$package['identifier']] = $package;
+//                    }
+//                }
+//                @closedir($apps_dir);
+//            }
+//
+//            uasort( $rc_apps, array(__CLASS__, '_sort_uname_callback') );
+//        }
+
         RC_Cache::app_cache_set($cache_key, $rc_apps, 'system');
-    
+        RC_Cache::app_cache_set($cache_key, $rc_apps, 'system');
+
         return $rc_apps;
     }
     
     
-    /**
-     * Callback to sort array by a 'Name' key.
-     *
-     * @since 3.2.0
-     * @access private
-     */
-    public static function _sort_uname_callback($a, $b) {
-        return strnatcasecmp( $a['name'], $b['name'] );
-    }
+//    /**
+//     * Callback to sort array by a 'Name' key.
+//     *
+//     * @since 3.2.0
+//     * @access private
+//     */
+//    public static function _sort_uname_callback($a, $b) {
+//        return strnatcasecmp( $a['name'], $b['name'] );
+//    }
     
     /**
      * 获取应用包信息
@@ -377,7 +383,7 @@ class App extends Facade
                 }
             }
         } else {
-            $alias_directory = \RC_Config::get('app');
+            $alias_directory = \RC_Config::get('bundles');
         }
 
         return RC_Hook::apply_filters('app_alias_directory_handle', $alias_directory);

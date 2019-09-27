@@ -125,7 +125,7 @@ class AppManager extends Manager
 
         }
         else {
-            $alias = config('app');
+            $alias = config('bundles');
         }
 
         $this->alias = RC_Hook::apply_filters('app_alias_directory_handle', $alias);
@@ -144,7 +144,7 @@ class AppManager extends Manager
             SITE_APP_PATH
         );
         $app_roots = array_unique($app_roots);
-        
+
         foreach ($app_roots as $app_root) {
             if (file_exists($app_root)) {
                 $apps_dir = RC_File::directories($app_root);

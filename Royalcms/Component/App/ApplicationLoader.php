@@ -5,6 +5,7 @@ namespace Royalcms\Component\App;
 
 
 use Exception;
+use Illuminate\Foundation\Application;
 use Royalcms\Component\App\Bundles\AppBundle;
 use Royalcms\Component\Filesystem\Filesystem;
 use Royalcms\Component\Support\Facades\File as RC_File;
@@ -88,7 +89,7 @@ class ApplicationLoader
     public function loadApps()
     {
         $manifest = $this->loadManifest();
- 
+
         if ($this->shouldRecompile($manifest)) {
             $app_roots = $this->loadAppsWithRoot();
             $manifest = $app_roots->collapse()->sort(array(__CLASS__, '_sort_uname_callback'));
@@ -186,6 +187,24 @@ class ApplicationLoader
     public function shouldRecompile($manifest)
     {
         return is_null($manifest);
+    }
+
+    /**
+     * Clear the cached Laravel bootstrapping files.
+     *
+     * @return void
+     */
+    protected function clearCompiled()
+    {
+        $royalcms = royalcms();
+
+        $applicationsPath = $royalcms->getCachedApplicationsPath($royalcms->currentSite());
+
+        if ($this->files->exists($applicationsPath)) {
+            return $this->files->delete($applicationsPath);
+        }
+
+        return null;
     }
 
     /**

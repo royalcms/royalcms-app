@@ -111,59 +111,19 @@ class App extends Facade
      *
      * @return array Key is the application file path and the value is an array of the application data.
      */
-    public static function get_apps($application_identifier = '') {
-        if (defined('RC_SITE')) {
-            $cache_key = 'applications' . constant('RC_SITE');
-        } else {
-            $cache_key = 'applications';
-        }
+    public static function get_apps($application_identifier = '')
+    {
+        $loader = royalcms('app')->getApplicationLoader();
 
-        $cache_applications = RC_Cache::app_cache_get($cache_key, 'system');
+        $cache_applications = $loader->toArray($loader->loadAppsWithIdentifier());
         if ( $cache_applications ) {
             if ($application_identifier && isset($cache_applications[ $application_identifier ])) {
                 return $cache_applications[ $application_identifier ];
             } else {
                 return $cache_applications;
             }
-        }        
-
-        $rc_apps = array();
-        $loader = royalcms('app')->getApplicationLoader();
-        $rc_apps = $loader->toArray($loader->loadAppsWithIdentifier());
-
-//        foreach ($app_roots as $app_root) {
-//            if (file_exists($app_root)) {
-//                $apps_dir = @opendir( $app_root);
-//                while (false !== ($file = @readdir($apps_dir))) {
-//                    if (substr($file, 0, 1) !== '.') {
-//                        $package = self::get_app_package($file, false, false); //Do not apply markup/translate as it'll be cached.
-//                        if ( empty ( $package['identifier'] ) )
-//                            continue;
-//
-//                        $rc_apps[$package['identifier']] = $package;
-//                    }
-//                }
-//                @closedir($apps_dir);
-//            }
-//
-//            uasort( $rc_apps, array(__CLASS__, '_sort_uname_callback') );
-//        }
-
-        RC_Cache::app_cache_set($cache_key, $rc_apps, 'system');
-
-        return $rc_apps;
+        }
     }
-    
-    
-//    /**
-//     * Callback to sort array by a 'Name' key.
-//     *
-//     * @since 3.2.0
-//     * @access private
-//     */
-//    public static function _sort_uname_callback($a, $b) {
-//        return strnatcasecmp( $a['name'], $b['name'] );
-//    }
     
     /**
      * 获取应用包信息

@@ -16,6 +16,11 @@ class AppManager extends Manager
      * @var array
      */
     protected $alias = array();
+
+    /**
+     * @var ApplicationLoader
+     */
+    protected $loader;
     
     /**
      * Create a new manager instance.
@@ -26,8 +31,17 @@ class AppManager extends Manager
     public function __construct($royalcms)
     {
         parent::__construct($royalcms);
+
+
+        $app_roots = array(
+            RC_APP_PATH,
+            SITE_APP_PATH
+        );
+        $app_roots = array_unique($app_roots);
+
+        $this->loader = new ApplicationLoader($app_roots);
         
-        $this->loadSiteApps();
+        $this->loadDrivers();
     }
     
     /**
@@ -131,38 +145,47 @@ class AppManager extends Manager
         $this->alias = RC_Hook::apply_filters('app_alias_directory_handle', $alias);
     }
 
-    protected function loadSiteApps()
+    /**
+     * 扫描应用目录的可用应用模块
+     *
+     * @return \Illuminate\Support\Collection|\Royalcms\Component\Support\Collection
+     */
+    protected function scanAppbundles()
     {
+        $apps = $this->loader->loadApps();
 
-//        $bundles = (new SiteApplications(royalcms()))->load();
-//
-//        dd($bundles);
+        return $apps;
+    }
 
+    /**
+     * 装载应用驱动
+     */
+    protected function loadDrivers()
+    {
+        $apps = $this->loader->loadAppsWithAlias();
 
-        $app_roots = array(
-            RC_APP_PATH,
-            SITE_APP_PATH
-        );
-        $app_roots = array_unique($app_roots);
+        $bundles = config('bundles');
 
-        foreach ($app_roots as $app_root) {
-            if (file_exists($app_root)) {
-                $apps_dir = RC_File::directories($app_root);
-                foreach ($apps_dir as $path) {
-                    $dir = basename($path);
-                    $bundle = new AppBundle($dir);
-                    if (!$bundle->getIdentifier()) continue;
-                    
-                    $this->drivers[$bundle->getAlias()] = $bundle;
-                    if ($bundle->getAlias() != $bundle->getDirectory()) {
-                        $this->drivers[$bundle->getDirectory()] = $bundle;
-                    }
+        collect($bundles)->each(function ($app) use ($apps) {
+            $bundle = $apps->get($app);
+
+            if (!empty($bundle)) {
+                $this->drivers[$bundle->getAlias()] = $bundle;
+
+                if ($bundle->getAlias() != $bundle->getDirectory()) {
+                    $this->drivers[$bundle->getDirectory()] = $bundle;
                 }
             }
-        }
-        
-        //ksort($this->drivers);
-        //uasort( $this->drivers, array('\Royalcms\Component\App\Helper', 'sort_uname_callback') );
+        });
+
     }
-    
+
+    /**
+     * @return ApplicationLoader
+     */
+    public function getApplicationLoader()
+    {
+        return $this->loader;
+    }
+
 }

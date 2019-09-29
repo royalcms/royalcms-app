@@ -134,7 +134,7 @@ class App extends Facade
         );
 
         $loader = new ApplicationLoader($app_roots);
-        $rc_apps = $loader->toArray($loader->loadApps());
+        $rc_apps = $loader->toArray($loader->loadAppsWithIdentifier());
 
 //        foreach ($app_roots as $app_root) {
 //            if (file_exists($app_root)) {
@@ -154,7 +154,6 @@ class App extends Facade
 //            uasort( $rc_apps, array(__CLASS__, '_sort_uname_callback') );
 //        }
 
-        RC_Cache::app_cache_set($cache_key, $rc_apps, 'system');
         RC_Cache::app_cache_set($cache_key, $rc_apps, 'system');
 
         return $rc_apps;

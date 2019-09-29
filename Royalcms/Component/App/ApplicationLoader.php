@@ -27,7 +27,7 @@ class ApplicationLoader
     /**
      * @return \Illuminate\Support\Collection|\Royalcms\Component\Support\Collection
      */
-    public function loadAppsByRoot()
+    public function loadAppsWithRoot()
     {
         $app_roots = collect($this->app_roots)->map(function ($app_root) {
 
@@ -57,17 +57,47 @@ class ApplicationLoader
      */
     public function loadApps()
     {
-        $app_roots = $this->loadAppsByRoot();
+        $app_roots = $this->loadAppsWithRoot();
         $app_roots = $app_roots->collapse()->sort(array(__CLASS__, '_sort_uname_callback'));
 
         return $app_roots;
     }
 
 
+    public function loadAppsWithAlias()
+    {
+        $apps = $this->loadApps();
+
+        $apps = $apps->mapWithKeys(function ($bundle) {
+            $data[$bundle->getAlias()] = $bundle;
+
+            if ($bundle->getAlias() != $bundle->getDirectory()) {
+                $data[$bundle->getDirectory()] = $bundle;
+            }
+
+            return $data;
+        });
+
+        return $apps;
+    }
+
+    public function loadAppsWithIdentifier()
+    {
+        $apps = $this->loadApps();
+
+        $apps = $apps->mapWithKeys(function ($bundle) {
+            $data[$bundle->getIdentifier()] = $bundle;
+            return $data;
+        });
+
+        return $apps;
+    }
+
+
     public function toArray($apps)
     {
-        $apps = $apps->mapWithKeys(function ($app) {
-            return [$app->getIdentifier() => $app->toArray()];
+        $apps = $apps->map(function ($bundle) {
+            return $bundle->toArray();
         })->toArray();
 
         return $apps;

@@ -51,6 +51,16 @@ abstract class BundleAbstract implements JsonSerializable
     {
         return $this->identifier;
     }
+
+    /**
+     * @param string $identifier
+     * @return BundleAbstract
+     */
+    public function setIdentifier(string $identifier): BundleAbstract
+    {
+        $this->identifier = $identifier;
+        return $this;
+    }
     
     /**
      * 获取应用所在文件夹名
@@ -59,6 +69,16 @@ abstract class BundleAbstract implements JsonSerializable
     public function getDirectory() 
     {
         return $this->directory;
+    }
+
+    /**
+     * @param string $directory
+     * @return BundleAbstract
+     */
+    public function setDirectory(string $directory): BundleAbstract
+    {
+        $this->directory = $directory;
+        return $this;
     }
     
     /**
@@ -69,6 +89,16 @@ abstract class BundleAbstract implements JsonSerializable
     {
         return $this->alias;
     }
+
+    /**
+     * @param string $alias
+     * @return BundleAbstract
+     */
+    public function setAlias(string $alias): BundleAbstract
+    {
+        $this->alias = $alias;
+        return $this;
+    }
     
     
     public function getNameSpace()
@@ -76,12 +106,61 @@ abstract class BundleAbstract implements JsonSerializable
         return $this->namespace;
     }
 
+    /**
+     * @param mixed $namespace
+     * @return BundleAbstract
+     */
+    public function setNamespace($namespace)
+    {
+        $this->namespace = $namespace;
+        return $this;
+    }
+
 
     public function getProvider()
     {
         return $this->provider;
     }
-    
+
+    /**
+     * @param mixed $provider
+     * @return BundleAbstract
+     */
+    public function setProvider($provider)
+    {
+        $this->provider = $provider;
+        return $this;
+    }
+
+    /**
+     * @param string $site
+     * @return BundleAbstract
+     */
+    public function setSite(string $site): BundleAbstract
+    {
+        $this->site = $site;
+        return $this;
+    }
+
+    /**
+     * @param mixed $package
+     * @return BundleAbstract
+     */
+    public function setPackage($package)
+    {
+        $this->package = $package;
+        return $this;
+    }
+
+    /**
+     * @param mixed $controllerPath
+     * @return BundleAbstract
+     */
+    public function setControllerPath($controllerPath)
+    {
+        $this->controllerPath = $controllerPath;
+        return $this;
+    }
     
     /**
      * 获取应用的控制器路径位置
@@ -250,13 +329,49 @@ abstract class BundleAbstract implements JsonSerializable
         return $this->getNameSpace() . '\\' . $class;
     }
 
-
     /**
      * Get application provider container name
      * @return string
      */
     abstract public function getContainerName();
 
+    /**
+     * @param array $properties
+     * @return BundleAbstract
+     */
+    public static function __set_state(array $properties)
+    {
+        $bundle = new static($properties['directory'], $properties['alias']);
+
+        foreach ($properties as $key => $value) {
+            if ($key == 'identifier') {
+                $bundle->setIdentifier($value);
+            }
+            elseif ($key == 'directory') {
+                $bundle->setDirectory($value);
+            }
+            elseif ($key == 'alias') {
+                $bundle->setAlias($value);
+            }
+            elseif ($key == 'site') {
+                $bundle->setSite($value);
+            }
+            elseif ($key == 'package') {
+                $bundle->setPackage($value);
+            }
+            elseif ($key == 'namespace') {
+                $bundle->setNamespace($value);
+            }
+            elseif ($key == 'provider') {
+                $bundle->setProvider($value);
+            }
+            elseif ($key == 'controllerPath') {
+                $bundle->setControllerPath($value);
+            }
+        }
+
+        return $bundle;
+    }
 
 }
 

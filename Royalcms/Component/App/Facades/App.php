@@ -127,13 +127,8 @@ class App extends Facade
             }
         }        
 
-        $rc_apps = array ();
-        $app_roots = array(
-            RC_APP_PATH,
-            SITE_APP_PATH
-        );
-
-        $loader = new ApplicationLoader($app_roots);
+        $rc_apps = array();
+        $loader = royalcms('app')->getApplicationLoader();
         $rc_apps = $loader->toArray($loader->loadAppsWithIdentifier());
 
 //        foreach ($app_roots as $app_root) {

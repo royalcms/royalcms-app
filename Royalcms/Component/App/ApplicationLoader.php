@@ -6,6 +6,7 @@ namespace Royalcms\Component\App;
 
 use Exception;
 use Illuminate\Foundation\Application;
+use RC_Hook;
 use Royalcms\Component\App\Bundles\AppBundle;
 use Royalcms\Component\Filesystem\Filesystem;
 use Royalcms\Component\Support\Facades\File as RC_File;
@@ -97,6 +98,8 @@ class ApplicationLoader
             $this->writeManifest($manifest);
         }
 
+        $manifest = RC_Hook::apply_filters('app_scan_bundles_filter', $manifest);
+
         return $manifest;
     }
 
@@ -114,7 +117,7 @@ class ApplicationLoader
 
             return $data;
         });
-
+        
         return $apps;
     }
 

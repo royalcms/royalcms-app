@@ -9,13 +9,6 @@ use Royalcms\Component\App\Bundles\AppBundle;
 
 class AppManager extends Manager
 {
-    
-    /**
-     * 别名映射
-     * key(别名) => value(应用目录)
-     * @var array
-     */
-    protected $alias = array();
 
     /**
      * @var ApplicationLoader
@@ -53,10 +46,6 @@ class AppManager extends Manager
     public function driver($name = null)
     {
         $bundle = parent::driver($name);
-
-        if (empty($this->alias)) {
-            $this->loadAppBundles();
-        }
         
         /**
          * load the Route app to the applications bundle info.
@@ -72,10 +61,21 @@ class AppManager extends Manager
 
     public function hasAlias($alias)
     {
-        if (isset($this->alias[$alias])) {
+        if (isset($this->drivers[$alias])) {
             return true;
         }
         return false;
+    }
+
+    public function getAlias()
+    {
+        $creators = [];
+
+        foreach ($this->customCreators as $key => $creator) {
+            $creators[$key] = $creator();
+        }
+
+        return array_merge($this->drivers, $creators);
     }
     
     /**
@@ -107,42 +107,6 @@ class AppManager extends Manager
     public function getDefaultDriver()
     {
         return config('route.default.'.config('route.module'));
-    }
-
-    protected function loadAppBundles()
-    {
-        $bundles = array();
-        $alias = array();
-
-        if (RC_Hook::has_filter('app_scan_bundles')) {
-            /**
-             * load the Route app to the applications bundle info.
-             *
-             * @since 3.1.0
-             *
-             * @param array $bundles
-             *                  多维数组，示例如下：
-             *                  array(
-             *                      array('alias' => '', 'identifier' => '', 'directory' => ''),
-             *                      array('alias' => '', 'identifier' => '', 'directory' => ''),
-             *                  )
-             */
-            $bundles = RC_Hook::apply_filters('app_scan_bundles', $bundles);
-            if ( !empty($bundles) ) {
-                foreach ($bundles as $bundle) {
-                    $alias[$bundle['alias']] = $bundle['directory'];
-                    if ($bundle['alias'] != $bundle['directory']) {
-                        $alias[$bundle['directory']] = $bundle['directory'];
-                    }
-                }
-            }
-
-        }
-        else {
-            $alias = config('bundles');
-        }
-
-        $this->alias = RC_Hook::apply_filters('app_alias_directory_handle', $alias);
     }
 
     /**

@@ -31,7 +31,7 @@
                 "Royalcms\\Component\\App\\AppServiceProvider"
             ],
             "aliases": {
-                "RC_App": "Royalcms\\Component\\App\\Facade\\App"
+                "RC_App": "Royalcms\\Component\\App\\Facades\\App"
             }
         }
     },

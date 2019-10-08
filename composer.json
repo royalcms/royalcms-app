@@ -25,6 +25,14 @@
     "extra": {
         "branch-alias": {
             "dev-master": "5.0-dev"
+        },
+        "royalcms": {
+            "providers": [
+                "Royalcms\\Component\\App\\AppServiceProvider"
+            ],
+            "aliases": {
+                "RC_App": "Royalcms\\Component\\App\\Facade\\App"
+            }
         }
     },
     "minimum-stability": "dev"

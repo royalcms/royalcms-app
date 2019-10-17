@@ -107,8 +107,8 @@ class ApplicationRepository
     public function createAppBundle($path)
     {
         $dir = basename($path);
-        $bundle = new AppBundle($dir);
-
+        $bundle = new AppBundle();
+        $bundle->packageInit($dir);
         return $bundle;
     }
 

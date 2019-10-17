@@ -30,18 +30,19 @@ abstract class BundleAbstract implements JsonSerializable
      * @var string
      */
     protected $site;
-    
-    
+
     protected $package;
-    
-    
+
     protected $namespace;
 
     protected $provider;
 
-    
     protected $controllerPath;
-    
+
+    public function __construct()
+    {
+        $this->site = defined('RC_SITE') ? RC_SITE : 'default';
+    }
     
     /**
      * 获取应用唯一标识符
@@ -213,31 +214,17 @@ abstract class BundleAbstract implements JsonSerializable
      * @param string $id
      * @return bool | array
      */
-    protected function appPackage($markup = true, $translate = true)
+    protected function makeAppPackage($markup = true, $translate = true)
     {
-        $package = $this->getPackageData();
+        $package = new AppPackage($this);
+
+        $package->loadPackageData();
         
         if ( $package && $translate ) {
-//            $lang_namespace = $this->getNamespace() . '::package.';
-//            $package['format_name'] = RC_Lang::get($lang_namespace . $package['name']);
-//            $package['format_description'] = RC_Lang::get($lang_namespace . $package['description']);
-//            if (empty($package['format_name'])) {
-//
-//            }
-//            if (empty($package['format_description'])) {
-//
-//            }
-
-            $package['format_name'] = __($package['name'], $this->getContainerName());
-            $package['format_description'] = __($package['description'], $this->getContainerName());
-
+            $this->package = $package->getFormatPackage();
         } else {
-
-            $package['format_name'] = $package['name'];
-            $package['format_description'] = $package['description'];
+            $this->package = $package->getPackage();
         }
-        
-        return $package;
     }
     
     
@@ -251,7 +238,7 @@ abstract class BundleAbstract implements JsonSerializable
     
     
     /**
-     * 获取app/configs/package.php配置信息
+     * Get app/configs/package.php configuration.
      *
      * @return NULL | array
      */
@@ -259,6 +246,21 @@ abstract class BundleAbstract implements JsonSerializable
     {
         return config($this->getContainerName().'::'.'package');
     }
+
+    /**
+     * Get application provider container name
+     *
+     * @return string
+     */
+    abstract public function getContainerName();
+
+    /**
+     * Get the app/configs/package.php path.
+     *
+     * @return mixed
+     */
+    abstract public function getPackageConfig();
+
 
     /**
      * Get installer class instance
@@ -327,50 +329,6 @@ abstract class BundleAbstract implements JsonSerializable
     protected function getNamespaceClassName($class)
     {
         return $this->getNameSpace() . '\\' . $class;
-    }
-
-    /**
-     * Get application provider container name
-     * @return string
-     */
-    abstract public function getContainerName();
-
-    /**
-     * @param array $properties
-     * @return BundleAbstract
-     */
-    public static function __set_state(array $properties)
-    {
-        $bundle = new static($properties['directory'], $properties['alias']);
-
-        foreach ($properties as $key => $value) {
-            if ($key == 'identifier') {
-                $bundle->setIdentifier($value);
-            }
-            elseif ($key == 'directory') {
-                $bundle->setDirectory($value);
-            }
-            elseif ($key == 'alias') {
-                $bundle->setAlias($value);
-            }
-            elseif ($key == 'site') {
-                $bundle->setSite($value);
-            }
-            elseif ($key == 'package') {
-                $bundle->setPackage($value);
-            }
-            elseif ($key == 'namespace') {
-                $bundle->setNamespace($value);
-            }
-            elseif ($key == 'provider') {
-                $bundle->setProvider($value);
-            }
-            elseif ($key == 'controllerPath') {
-                $bundle->setControllerPath($value);
-            }
-        }
-
-        return $bundle;
     }
 
 }

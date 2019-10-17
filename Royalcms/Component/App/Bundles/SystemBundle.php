@@ -7,23 +7,33 @@ use Royalcms\Component\App\BundleAbstract;
 
 class SystemBundle extends BundleAbstract implements BundlePackage
 {
-    
     public function __construct()
     {
-        $this->directory = 'system';
-        
-        $this->alias = config('system.admin_entrance');
-        
-        $this->package = $this->appPackage();
-        
-        $this->identifier = array_get($this->package, 'identifier');
-        
-        $this->namespace = array_get($this->package, 'namespace');
-        $this->provider = $this->namespace . '\\' . array_get($this->package, 'provider');
+        parent::__construct();
 
-        $this->site = defined('RC_SITE') ? RC_SITE : 'default';
+        $this->packageInit('system', config('system.admin_entrance'));
+    }
+
+    public function packageInit($app_floder, $app_alias = null)
+    {
+        $this->directory = $app_floder;
+
+        if (is_null($app_alias)) {
+            $this->alias = $app_floder;
+        } else {
+            $this->alias = $app_alias;
+        }
         
         $this->makeControllerPath();
+
+        $this->makeAppPackage();
+
+        if (! empty($this->package)) {
+            $this->identifier = $this->getPackage('identifier');
+
+            $this->namespace = $this->getPackage('namespace');
+            $this->provider = $this->namespace . '\\' . $this->getPackage('provider');
+        }
     }
     
     protected function makeControllerPath()
@@ -41,6 +51,17 @@ class SystemBundle extends BundleAbstract implements BundlePackage
         $path = RC_SYSTEM_PATH;
         
         return $path;
+    }
+
+    public function getPackageConfig()
+    {
+        $path = $this->getAbsolutePath() . 'configs/package.php';
+
+        if (file_exists($path)) {
+            return include $path;
+        }
+
+        return null;
     }
 
     /**

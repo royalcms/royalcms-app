@@ -68,7 +68,8 @@ class ApplicationLoader
 
                 $apps = collect($apps_dir)->map(function ($path) {
                     $dir = basename($path);
-                    $bundle = new AppBundle($dir);
+                    $bundle = new AppBundle();
+                    $bundle->packageInit($dir);
                     if (! $bundle->getIdentifier()) {
                         return null;
                     }
@@ -163,18 +164,11 @@ class ApplicationLoader
     {
         $royalcms = royalcms();
 
-        if ($site) {
-            $suffix = '_' . $site;
-        }
-        else {
-            $suffix = '';
-        }
-
         if ($royalcms->vendorIsWritableForOptimizations()) {
-            $path = $royalcms->bootstrapPath() . "/cache/applications{$suffix}.php";
+            $path = $royalcms->bootstrapPath() . "/cache/applications.php";
         }
         else {
-            $path = $royalcms->storagePath() . "/framework/applications{$suffix}.php";
+            $path = $royalcms->storagePath() . "/framework/applications.php";
         }
 
         return $path;

@@ -191,11 +191,11 @@ class ApplicationLoader
      *
      * @return void
      */
-    protected function clearCompiled()
+    public function clearCompiled()
     {
         $royalcms = royalcms();
 
-        $applicationsPath = $royalcms->getCachedApplicationsPath($royalcms->currentSite());
+        $applicationsPath = $this->manifestPath;
 
         if ($this->files->exists($applicationsPath)) {
             return $this->files->delete($applicationsPath);

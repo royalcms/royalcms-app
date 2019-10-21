@@ -144,6 +144,15 @@ class AppManager extends Manager
 
     }
 
+    public function getBundles()
+    {
+        $bundles = config('bundles');
+
+        $bundles = RC_Hook::apply_filters('app_activation_bundles', $bundles);
+
+        return $bundles;
+    }
+
     /**
      * @return ApplicationLoader
      */

@@ -93,10 +93,7 @@ class ApplicationLoader
         $manifest = $this->loadManifest();
 
         if ($this->shouldRecompile($manifest)) {
-            $app_roots = $this->loadAppsWithRoot();
-            $manifest = $app_roots->collapse()->sort(array(__CLASS__, '_sort_uname_callback'));
-
-            $this->writeManifest($manifest);
+            $manifest = $this->scanningAppsToCache();
         }
 
         $manifest = RC_Hook::apply_filters('app_scan_bundles_filter', $manifest);
@@ -104,6 +101,15 @@ class ApplicationLoader
         return $manifest;
     }
 
+    public function scanningAppsToCache()
+    {
+        $app_roots = $this->loadAppsWithRoot();
+        $manifest = $app_roots->collapse()->sort(array(__CLASS__, '_sort_uname_callback'));
+
+        $this->writeManifest($manifest);
+
+        return $manifest;
+    }
 
     public function loadAppsWithAlias()
     {

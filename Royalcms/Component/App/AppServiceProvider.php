@@ -4,6 +4,7 @@ namespace Royalcms\Component\App;
 
 use Facade\Ignition\Commands\TestCommand;
 use Royalcms\Component\App\Commands\AppPackageDiscoverCommand;
+use Royalcms\Component\App\Commands\AppPackageScanerCommand;
 use Royalcms\Component\ClassLoader\ClassManager;
 use Royalcms\Component\Foundation\AliasLoader;
 use Royalcms\Component\Support\ServiceProvider;
@@ -55,8 +56,10 @@ class AppServiceProvider extends ServiceProvider
     protected function registerCommands()
     {
         $this->app->bind('command.package:app-discover', AppPackageDiscoverCommand::class);
+        $this->app->bind('command.package:app-scaner', AppPackageScanerCommand::class);
 
         $this->commands(['command.package:app-discover']);
+        $this->commands(['command.package:app-scaner']);
     }
 
 

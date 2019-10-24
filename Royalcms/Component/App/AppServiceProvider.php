@@ -55,8 +55,8 @@ class AppServiceProvider extends ServiceProvider
 
     protected function registerCommands()
     {
-        $this->app->bind('command.package:app-discover', AppPackageDiscoverCommand::class);
-        $this->app->bind('command.package:app-scaner', AppPackageScanerCommand::class);
+        $this->royalcms->bind('command.package:app-discover', AppPackageDiscoverCommand::class);
+        $this->royalcms->bind('command.package:app-scaner', AppPackageScanerCommand::class);
 
         $this->commands(['command.package:app-discover']);
         $this->commands(['command.package:app-scaner']);

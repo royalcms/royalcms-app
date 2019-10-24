@@ -47,15 +47,13 @@ class AppPackageManifest
      *
      * @param  \Royalcms\Component\Filesystem\Filesystem  $files
      * @param  string  $basePath
-     * @param  \Royalcms\Component\App\AppManager  $appManager
      * @param  string  $manifestPath
      * @return void
      */
-    public function __construct(Filesystem $files, $basePath, $appManager, $manifestPath)
+    public function __construct(Filesystem $files, $basePath, $manifestPath)
     {
         $this->files = $files;
         $this->basePath = $basePath;
-        $this->appManager = $appManager;
         $this->manifestPath = $manifestPath;
     }
 
@@ -123,9 +121,11 @@ class AppPackageManifest
      */
     public function build()
     {
-        $packages = $this->appManager->getApplicationLoader()->loadApps();
+        $appManager = royalcms('app');
 
-        $bundles = $this->appManager->getBundles();
+        $packages = $appManager->getApplicationLoader()->loadApps();
+
+        $bundles = $appManager->getBundles();
 
         $bundles = array_keys($bundles);
 

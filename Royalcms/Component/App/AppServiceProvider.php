@@ -47,7 +47,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         $this->royalcms->instance(AppPackageManifest::class, new AppPackageManifest(
-            new \Royalcms\Component\Filesystem\Filesystem, $this->royalcms->basePath(), $this->royalcms->make('app'), $this->royalcms->getCachedAppPackagesPath()
+            new \Royalcms\Component\Filesystem\Filesystem, $this->royalcms->basePath(), $this->royalcms->getCachedAppPackagesPath()
         ));
 
         $this->registerCommands();

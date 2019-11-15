@@ -132,16 +132,43 @@ class AppManager extends Manager
 
         collect($bundles)->each(function ($app) use ($apps) {
             $bundle = $apps->get($app);
-
-            if (!empty($bundle)) {
-                $this->drivers[$bundle->getAlias()] = $bundle;
-
-                if ($bundle->getAlias() != $bundle->getDirectory()) {
-                    $this->drivers[$bundle->getDirectory()] = $bundle;
-                }
-            }
+            $this->registerApplicationWithBundle($bundle);
         });
 
+    }
+
+    /**
+     * @param $app
+     */
+    public function registerApplication($app)
+    {
+        $apps = $this->loader->loadAppsWithAlias();
+
+        $bundle = $apps->get($app);
+
+        (new ApplicationRegister($this, $bundle))->register();
+    }
+
+    /**
+     * @param $bundle
+     */
+    private function registerApplicationWithBundle($bundle)
+    {
+        if (!empty($bundle)) {
+            $this->drivers[$bundle->getAlias()] = $bundle;
+
+            if ($bundle->getAlias() != $bundle->getDirectory()) {
+                $this->drivers[$bundle->getDirectory()] = $bundle;
+            }
+        }
+    }
+
+    /**
+     * 生成应用包自动发现缓存
+     */
+    public function makeAppPackages()
+    {
+        royalcms(AppPackageManifest::class)->build();
     }
 
     public function getBundles()

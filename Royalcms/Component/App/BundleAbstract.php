@@ -326,7 +326,7 @@ abstract class BundleAbstract implements JsonSerializable
      * @param $class
      * @return string
      */
-    protected function getNamespaceClassName($class)
+    public function getNamespaceClassName($class)
     {
         return $this->getNameSpace() . '\\' . $class;
     }

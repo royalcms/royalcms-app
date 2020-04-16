@@ -21,9 +21,16 @@ class AppControllerDispatcher
     
     protected $routePath;
     
-    public function __construct()
+    public function __construct($route = null)
     {
-        $this->route = royalcms('default-router');
+        if (is_null($route)) {
+            $this->route = royalcms('default-router');
+        }
+        else {
+            $this->route = $route;
+        }
+
+        $this->route->parser();
 
         $this->manager = royalcms('app');
         

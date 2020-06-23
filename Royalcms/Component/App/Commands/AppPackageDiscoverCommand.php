@@ -29,6 +29,8 @@ class AppPackageDiscoverCommand extends Command
      */
     public function handle(AppPackageManifest $manifest)
     {
+        $this->call('package:app-scaner');
+
         $manifest->build();
 
         foreach (array_keys($manifest->manifest) as $package) {

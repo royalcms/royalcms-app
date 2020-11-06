@@ -77,7 +77,9 @@ class AppControllerDispatcher
             $route = $this->routePath;
             $request = royalcms('request');
             $method = $this->route->getAction();
-            $response = $this->callWithinStack((new $controller), $route, $request, $method);
+            $this->container->singleton($controller);
+            $instance = $this->container->make($controller);
+            $response = $this->callWithinStack($instance, $route, $request, $method);
             return $response;
         } catch (NotFoundHttpException $e) {
             abort(403, $e->getMessage());

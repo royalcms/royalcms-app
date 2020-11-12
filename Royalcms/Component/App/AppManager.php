@@ -130,11 +130,15 @@ class AppManager extends Manager
 
         $bundles = config('bundles');
 
-        collect($bundles)->each(function ($app) use ($apps) {
+        collect($bundles)->each(function ($app, $alias) use ($apps) {
             $bundle = $apps->get($app);
-            $this->registerApplicationWithBundle($bundle);
+            if ($alias == $app) {
+                $this->registerApplicationWithBundle($bundle);
+            }
+            else {
+                $this->registerApplicationWithBundle($bundle, $alias);
+            }
         });
-
     }
 
     /**
@@ -152,10 +156,15 @@ class AppManager extends Manager
     /**
      * @param $bundle
      */
-    private function registerApplicationWithBundle($bundle)
+    private function registerApplicationWithBundle($bundle, $alias = null)
     {
         if (!empty($bundle)) {
-            $this->drivers[$bundle->getAlias()] = $bundle;
+            if (!empty($alias)) {
+                $this->drivers[$alias] = $bundle;
+            }
+            else {
+                $this->drivers[$bundle->getAlias()] = $bundle;
+            }
 
             if ($bundle->getAlias() != $bundle->getDirectory()) {
                 $this->drivers[$bundle->getDirectory()] = $bundle;

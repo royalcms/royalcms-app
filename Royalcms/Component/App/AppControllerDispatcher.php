@@ -82,7 +82,7 @@ class AppControllerDispatcher
             $response = $this->callWithinStack($instance, $route, $request, $method);
             return $response;
         } catch (NotFoundHttpException $e) {
-            abort(403, $e->getMessage());
+            abort(404, $e->getMessage());
         } catch (AccessDeniedHttpException $e) {
             abort(401, $e->getMessage());
         }
@@ -102,7 +102,7 @@ class AppControllerDispatcher
             RC_Hook::do_action($this->routePath);
             return royalcms('response');
         } else {
-            abort(403, $error->get_error_message());
+            abort(404, $error->get_error_message());
         }
     }
     
@@ -128,7 +128,7 @@ class AppControllerDispatcher
             
             return $controller;
         } catch (InvalidArgumentException $e) {
-            abort(403, $e->getMessage());
+            abort(404, $e->getMessage());
         }
     }
 

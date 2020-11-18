@@ -60,20 +60,20 @@ class AppControllerDispatcher
      */
     public function dispatch()
     {
-        // First we will make an instance of this controller via the IoC container instance
-        // so that we can call the methods on it. We will also apply any "after" filters
-        // to the route so that they will be run by the routers after this processing.
-        $controller = $this->makeController();
-
-        if ( $controller instanceof RoyalcmsResponse) {
-            return $controller;
-        }
-
-        if (is_rc_error($controller)) {
-            return $this->handlerNotFoundController($controller);
-        }
-
         try {
+            // First we will make an instance of this controller via the IoC container instance
+            // so that we can call the methods on it. We will also apply any "after" filters
+            // to the route so that they will be run by the routers after this processing.
+            $controller = $this->makeController();
+
+            if ( $controller instanceof RoyalcmsResponse) {
+                return $controller;
+            }
+
+            if (is_rc_error($controller)) {
+                return $this->handlerNotFoundController($controller);
+            }
+
             $route = $this->routePath;
             $request = royalcms('request');
             $method = $this->route->getAction();
@@ -85,6 +85,8 @@ class AppControllerDispatcher
             abort(404, $e->getMessage());
         } catch (AccessDeniedHttpException $e) {
             abort(401, $e->getMessage());
+        } catch (\Exception $e) {
+            abort(500, $e->getMessage());
         }
     }
 

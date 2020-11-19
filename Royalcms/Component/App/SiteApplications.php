@@ -20,27 +20,20 @@ class SiteApplications
      * Create a new service repository instance.
      *
      * @param  \Royalcms\Component\Contracts\Foundation\Royalcms  $royalcms
-//     * @param  \Royalcms\Component\Filesystem\Filesystem  $files
-//     * @param  string  $manifestPath
      * @return void
      */
     public function __construct(RoyalcmsContract $royalcms)
     {
         $this->royalcms = $royalcms;
-
-
     }
 
 
     public function load()
     {
-
         $app_roots = array(
             rtrim(RC_APP_PATH, DS),
             rtrim(SITE_APP_PATH, DS)
         );
-
-//        dd($app_roots);
 
         $apps = collect($app_roots)
             ->unique()
@@ -50,8 +43,6 @@ class SiteApplications
             ->map(function($item) {
             return RC_File::directories($item);
         })->collapse()->all();
-
-//        dd($apps);
 
         $site = defined('RC_SITE') ? RC_SITE : '';
 

@@ -12,19 +12,19 @@ abstract class BundleAbstract implements JsonSerializable
      * @var string
      */
     protected $identifier;
-    
+
     /**
      * 应用所在文件夹名
      * @var string
      */
     protected $directory;
-    
+
     /**
      * 应用路由访问别名
      * @var string
      */
     protected $alias;
-    
+
     /**
      * 应用所属站点名
      * @var string
@@ -43,12 +43,12 @@ abstract class BundleAbstract implements JsonSerializable
     {
         $this->site = defined('RC_SITE') ? RC_SITE : 'default';
     }
-    
+
     /**
      * 获取应用唯一标识符
      * @return string
      */
-    public function getIdentifier() 
+    public function getIdentifier()
     {
         return $this->identifier;
     }
@@ -62,12 +62,12 @@ abstract class BundleAbstract implements JsonSerializable
         $this->identifier = $identifier;
         return $this;
     }
-    
+
     /**
      * 获取应用所在文件夹名
      * @return string
      */
-    public function getDirectory() 
+    public function getDirectory()
     {
         return $this->directory;
     }
@@ -81,12 +81,12 @@ abstract class BundleAbstract implements JsonSerializable
         $this->directory = $directory;
         return $this;
     }
-    
+
     /**
      * 获取应用所属站点名
      * @return string
      */
-    public function getAlias() 
+    public function getAlias()
     {
         return $this->alias;
     }
@@ -100,8 +100,8 @@ abstract class BundleAbstract implements JsonSerializable
         $this->alias = $alias;
         return $this;
     }
-    
-    
+
+
     public function getNameSpace()
     {
         return $this->namespace;
@@ -162,7 +162,7 @@ abstract class BundleAbstract implements JsonSerializable
         $this->controllerPath = $controllerPath;
         return $this;
     }
-    
+
     /**
      * 获取应用的控制器路径位置
      * @return string
@@ -171,30 +171,30 @@ abstract class BundleAbstract implements JsonSerializable
     {
         return $this->controllerPath;
     }
-    
-    
+
+
     public function getControllerClassName($controller)
     {
-        if ( ! royalcms('app')->hasAlias($this->alias) ) {
+        if (!royalcms('app')->hasAlias($this->alias)) {
             return RC_Error::make('not_register_route_app', '没有注册此路由名称');
         }
-        
+
         $controller_classname = $this->namespace . '\Controllers\\' . $this->normalizeName($controller) . 'Controller';
         if (class_exists($controller_classname)) {
             return $controller_classname;
         }
-        
+
         $app_controller = $this->controllerPath . $controller . '.php';
-        if ( ! file_exists($app_controller) ) {
+        if (!file_exists($app_controller)) {
             return RC_Error::make('controller_does_not_exist', "Controller {$app_controller} does not exist.");
         }
-        
+
         include_once $app_controller;
-        
+
         $controller_classname = $controller;
-        
+
         $my_controller = $this->controllerPath . 'MY_' . $controller . '.php';
-        if ( file_exists($my_controller) ) {
+        if (file_exists($my_controller)) {
             $controller_classname = 'MY_' . $controller;
 
             include_once $my_controller;
@@ -203,11 +203,11 @@ abstract class BundleAbstract implements JsonSerializable
         if (class_exists($controller_classname)) {
             return $controller_classname;
         }
-        
+
         return RC_Error::make('controller_does_not_exist', "Controller class {$controller_classname} does not exist.");;
     }
-    
-    
+
+
     /**
      * 获取应用包信息
      *
@@ -219,15 +219,15 @@ abstract class BundleAbstract implements JsonSerializable
         $package = new AppPackage($this);
 
         $package->loadPackageData();
-        
-        if ( $package && $translate ) {
+
+        if ($package && $translate) {
             $this->package = $package->getFormatPackage();
         } else {
             $this->package = $package->getPackage();
         }
     }
-    
-    
+
+
     public function getPackage($key = null)
     {
         if (is_null($key)) {
@@ -235,8 +235,8 @@ abstract class BundleAbstract implements JsonSerializable
         }
         return array_get($this->package, $key);
     }
-    
-    
+
+
     /**
      * Get app/configs/package.php configuration.
      *
@@ -244,7 +244,7 @@ abstract class BundleAbstract implements JsonSerializable
      */
     public function getPackageData()
     {
-        return config($this->getContainerName().'::'.'package');
+        return config($this->getContainerName() . '::' . 'package');
     }
 
     /**
@@ -296,28 +296,28 @@ abstract class BundleAbstract implements JsonSerializable
     public function toArray()
     {
         return [
-            'identifier' => $this->identifier,
-            'directory' => $this->directory,
-            'alias' => $this->alias,
-            'site' => $this->site,
-            'package' => $this->package,
-            'namespace' => $this->namespace,
-            'provider' => $this->provider,
+            'identifier'     => $this->identifier,
+            'directory'      => $this->directory,
+            'alias'          => $this->alias,
+            'site'           => $this->site,
+            'package'        => $this->package,
+            'namespace'      => $this->namespace,
+            'provider'       => $this->provider,
             'controllerPath' => $this->controllerPath,
         ];
     }
-    
+
     protected function normalizeName($name)
     {
         // convert foo-bar to FooBar
         $name = implode('', array_map('ucfirst', explode('-', $name)));
-        
+
         // convert foo_bar to FooBar
         $name = implode('', array_map('ucfirst', explode('_', $name)));
-        
+
         // convert foot/bar to Foo\Bar
         $name = implode('\\', array_map('ucfirst', explode('/', $name)));
-        
+
         return $name;
     }
 

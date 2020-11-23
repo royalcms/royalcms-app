@@ -145,20 +145,22 @@ class AppControllerDispatcher
      */
     protected function callWithinStack($instance, $route, $request, $method)
     {
-        $shouldSkipMiddleware = $this->container->bound('middleware.disable') &&
-            $this->container->make('middleware.disable') === true;
-
-        $middleware = $shouldSkipMiddleware ? [] : $this->getMiddleware($instance, $method);
+//        $shouldSkipMiddleware = $this->container->bound('middleware.disable') &&
+//        $this->container->make('middleware.disable') === true;
+//
+//        $middleware = $shouldSkipMiddleware ? [] : $this->getMiddleware($instance, $method);
 
         // Here we will make a stack onion instance to execute this request in, which gives
         // us the ability to define middlewares on controllers. We will return the given
         // response back out so that "after" filters can be run after the middlewares.
-        return (new Pipeline($this->container))
-            ->send($request)
-            ->through($middleware)
-            ->then(function ($request) use ($instance, $route, $method) {
-                return $this->call($instance, $route, $method);
-            });
+//        return (new Pipeline($this->container))
+//                ->send($request)
+//                ->through($middleware)
+//                ->then(function ($request) use ($instance, $route, $method) {
+//                        return $this->call($instance, $route, $method);
+//        });
+
+        return $this->call($instance, $route, $method);
     }
 
     /**
@@ -234,6 +236,9 @@ class AppControllerDispatcher
         $response = $this->route->runControllerAction(get_class($instance), $method);
         if (is_null($response)) {
             return royalcms('response');
+        }
+        elseif (is_rc_error($response)) {
+            return royalcms('response')->setContent($response->get_error_message());
         }
         return $response;
     }
